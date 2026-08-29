@@ -1,0 +1,54 @@
+# Optional: build the React app with Vite and publish that instead of docs/.
+#
+# You do not need this to go live. docs/ is a complete static site and GitHub
+# Pages can serve it with no build at all — see the README. Use this workflow
+# when you would rather deploy the React source, so the site is always built
+# from src/ and docs/ never has to be regenerated and committed.
+#
+# To switch to it: Settings -> Pages -> Source -> GitHub Actions.
+# To go back:      Settings -> Pages -> Source -> Deploy from a branch -> main /docs.
+
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # no package-lock.json is committed, so `npm install`, not `npm ci`
+      - run: npm install
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

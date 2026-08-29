@@ -1,0 +1,404 @@
+/* =================================================================
+   PROJECT DETAIL PAGE
+   ================================================================= */
+.detail {
+  position: relative;
+  padding-top: 178px;
+  padding-bottom: 40px;
+  animation: detailIn 0.7s var(--ease) both;
+}
+
+@keyframes detailIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- masthead ---------- */
+.detail__back {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  transition: color 0.35s var(--ease), gap 0.35s var(--ease);
+}
+
+.detail__back:hover {
+  color: var(--accent);
+  gap: 15px;
+}
+
+.detail__eyebrow {
+  display: flex;
+  width: fit-content;
+  margin-top: 46px;
+}
+
+.detail__title {
+  margin-top: 24px;
+  font-size: clamp(42px, 5.4vw, 96px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: var(--ink);
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.detail__tagline {
+  margin-top: 28px;
+  max-width: 46ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(20px, 1.6vw, 28px);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.detail__sub {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+}
+
+/* ---------- lead image ---------- */
+.detail__lead {
+  margin-top: 56px;
+}
+
+.detail__lead figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  /* no border: when a 3:2 photo sits in a box the height clamp has made
+     wider, a border would outline empty space either side of the picture */
+  background: var(--bg);
+  /* the detail page is where the picture is the point, so the frame is wide
+     and the image is contained rather than cropped */
+  width: 100%;
+  aspect-ratio: 16 / 8.4;
+}
+
+.detail__lead img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: contrast(1.02);
+}
+
+.detail__award {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-line);
+  background: rgba(6, 10, 18, 0.7);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.detail__award i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+/* ---------- facts + prose ---------- */
+.detail__body {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.5fr) minmax(0, 1.5fr);
+  gap: 100px;
+  align-items: start;
+  margin-top: 110px;
+}
+
+.detail__factsInner {
+  position: sticky;
+  top: 140px;
+}
+
+.factList {
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.factList__row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 18px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.factList__row dt {
+  color: var(--ink-4);
+}
+
+.factList__row dd {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.detail__factsTitle {
+  margin-top: 40px;
+  margin-bottom: 14px;
+}
+
+.detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 38px;
+}
+
+.detail__tags li {
+  padding: 6px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+/* ---------- prose ---------- */
+.detail__prose {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+  max-width: 66ch;
+}
+
+.detail__h2 {
+  font-size: clamp(26px, 2.2vw, 38px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 26px;
+}
+
+.detail__h2 em {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.detail__block p + p {
+  margin-top: 20px;
+}
+
+/* ---------- gallery ---------- */
+.detail__gallerySection {
+  margin-top: 130px;
+  padding-top: 34px;
+  border-top: 1px solid var(--line);
+}
+
+.detail__galleryHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 44px;
+}
+
+/* JUSTIFIED ROWS.
+   The gallery holds real production photography and process boards — portrait,
+   landscape and panoramic, all mixed. A fixed grid would have to crop them to
+   fit, and cropping is the one thing you must not do to a costume photograph.
+   So each row's images keep their own aspect ratio and share the row's width in
+   proportion to it (flex-grow: <ratio>, flex-basis: 0), which makes every image
+   in the row exactly the same height. tools/build_galleries.py decides which
+   images go in which row so each row's height lands near 470px.
+
+   If --gap or the shell width changes, update GAP / SHELL in that script too —
+   it is doing the arithmetic that this rule then trusts. */
+.detail__gallery {
+  --gap: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.shotRow {
+  display: flex;
+  gap: var(--gap);
+  align-items: flex-start;
+}
+
+.shot {
+  margin: 0;
+  min-width: 0;
+  flex-grow: var(--r);
+  flex-basis: 0;
+}
+
+/* holds a short last row to the height of the row above instead of letting one
+   image stretch across the full width */
+.shotRow__pad {
+  flex-basis: 0;
+}
+
+.shot__frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  aspect-ratio: var(--r);
+}
+
+.shot__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.22) brightness(0.95);
+  transform: scale(1.01);
+  transition: transform 1.3s var(--ease), filter 0.8s var(--ease);
+}
+
+.shot:hover .shot__frame img {
+  transform: scale(1.05);
+  filter: grayscale(0) brightness(1.02);
+}
+
+.shot__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.5s var(--ease);
+}
+
+.shot:hover .shot__frame::after {
+  border-color: var(--accent-line);
+}
+
+.shot__idx {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-size: 9.5px;
+  color: var(--accent);
+}
+
+.shot__caption {
+  padding-top: 13px;
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+/* ---------- pager ---------- */
+.detail__pagerWrap {
+  margin-top: 130px;
+}
+
+.detail__pager {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.pager {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 32px 30px;
+  background: var(--bg);
+  transition: background 0.45s var(--ease);
+  min-width: 0;
+}
+
+.pager span {
+  color: var(--ink-4);
+}
+
+.pager strong {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  transition: color 0.4s var(--ease);
+  overflow-wrap: anywhere;
+}
+
+.pager:hover {
+  background: var(--bg-raise);
+}
+
+.pager:hover strong {
+  color: var(--accent);
+}
+
+.pager--cta {
+  text-align: center;
+  align-items: center;
+}
+
+.pager--next {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.detail--missing {
+  min-height: 70vh;
+}
+
+.detail--missing .detail__back {
+  margin-top: 36px;
+}
+
+@media (max-width: 1180px) {
+  .detail__body {
+    grid-template-columns: 1fr;
+    gap: 54px;
+  }
+  .detail__factsInner {
+    position: static;
+  }
+}
+
+@media (max-width: 860px) {
+  .detail {
+    padding-top: 128px;
+  }
+  /* one per row on a phone — the packing above assumes desktop width */
+  .shotRow {
+    flex-direction: column;
+  }
+  .shotRow__pad {
+    display: none;
+  }
+  .detail__pager {
+    grid-template-columns: 1fr;
+  }
+  .pager--cta,
+  .pager--next {
+    text-align: left;
+    align-items: flex-start;
+  }
+}

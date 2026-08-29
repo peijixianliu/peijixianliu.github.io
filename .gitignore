@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-preview/
+.DS_Store
+*.log
+
+# docs/ is NOT ignored on purpose — it is the deployable static site and the
+# thing GitHub Pages serves. Regenerate it with `node tools/build_preview.mjs`
+# and commit the result.

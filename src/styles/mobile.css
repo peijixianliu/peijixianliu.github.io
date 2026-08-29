@@ -1,0 +1,223 @@
+/* =================================================================
+   MOBILE & TABLET PATCH
+   =================================================================
+   This file must load LAST — it is imported at the bottom of App.jsx and
+   listed last in tools/build_preview.mjs. Every section stylesheet already
+   carries its own breakpoints (nav 1080, hero 1100/700, works 1100/640,
+   about 1280/1000, detail 1180/860), and this patch refines what they leave
+   over at phone width. Loading last is what lets it win without !important.
+   ================================================================= */
+@media (max-width: 768px) {
+  /* ---- 1. container and rhythm ---- */
+  :root {
+    --gutter: 20px;
+    --section-pad: 70px;
+  }
+
+  /* ---- 2. nav ----
+     .nav__links is already display:none below 1080px, so only the brand and
+     the CTA are left to fit across the bar. */
+  .nav__inner {
+    height: 64px;
+    gap: 16px;
+  }
+  .nav__brandText strong {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+  }
+  .nav__brandText em {
+    display: none;
+  }
+  .nav__cta {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+
+  /* ---- 3. hero ---- */
+  .hero__inner {
+    padding-top: 90px;
+    padding-bottom: 30px;
+  }
+  .hero__main {
+    gap: 24px;
+    padding-bottom: 40px;
+  }
+  .hero__title {
+    font-size: clamp(46px, 14vw, 76px);
+    line-height: 0.92;
+  }
+  .hero__aside {
+    padding-top: 20px;
+  }
+  .hero__lede {
+    font-size: 16px;
+    max-width: 100%;
+  }
+  .hero__actions {
+    margin-top: 24px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero__actions .btn {
+    justify-content: center;
+    width: 100%;
+    padding: 12px 20px;
+  }
+  .hero__foot {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  /* ---- 4. about ---- */
+  .about__body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .about__stats {
+    grid-template-columns: 1fr;
+    margin-top: 60px;
+  }
+  .stat {
+    padding: 24px 20px;
+  }
+  .about__contact li {
+    grid-template-columns: 80px 1fr;
+    font-size: 13px;
+  }
+
+  /* ---- 5. work cards ----
+     The grid is already single-column below 640px.
+
+     The card image ratio is deliberately NOT overridden here. Each cover file
+     is pre-cut to the exact ratio of the card it sits in (tools/fit_ai_images.py
+     does this so `object-fit: cover` has nothing left to crop) — forcing one
+     shared ratio at this width would put the cropping straight back, and on the
+     Hyperion turnarounds that costs whole figures. Card heights therefore vary
+     down the column, which is what keeping every picture intact looks like. */
+  .works__head {
+    margin-bottom: 36px;
+  }
+  .chip {
+    padding: 8px 14px;
+    font-size: 11.5px;
+  }
+
+  /* There is no hover on a touch screen, so the panel that normally appears
+     over the picture is switched off here rather than left permanently on:
+     it is a child of .card__media (an overflow:hidden box with a fixed
+     aspect-ratio), so it cannot be moved below the image by CSS alone, and
+     leaving it visible means every card ships with a paragraph printed across
+     the costume. The card is a link — the blurb and the tags are one tap away
+     on the project page, which is where a phone reader is going anyway. */
+  .card__hover {
+    display: none;
+  }
+  .card__award {
+    left: 14px;
+    bottom: 14px;
+    padding: 6px 11px;
+    font-size: 9px;
+  }
+  /* ...and it must not fade out on tap, since there is nothing to fade back */
+  .card:hover .card__award {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The meta line is a two-column row on desktop. At this width the left
+     column is too narrow for the category kicker, which wraps and then reads
+     as though it were interleaved with the year on the right. Stack it. */
+  .card__meta {
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+  }
+  .card__metaSide {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    text-align: left;
+  }
+  .card__title {
+    font-size: 18px;
+  }
+
+  /* ---- 6. capabilities ---- */
+  .caps__cards {
+    grid-template-columns: 1fr;
+  }
+  .capCard {
+    padding: 28px 20px;
+  }
+  .capCard__summary {
+    min-height: 0;
+  }
+
+  /* ---- 7. contact ---- */
+  .contact {
+    padding: 100px 0 0;
+  }
+  .contact__headline h2 {
+    font-size: clamp(40px, 12vw, 68px);
+    margin-top: 40px;
+  }
+  .contact__mailWrap {
+    margin-top: 40px;
+  }
+  .contact__mail {
+    gap: 12px;
+  }
+  .contact__mailArrow {
+    width: 44px;
+    height: 44px;
+  }
+  .socialRow {
+    grid-template-columns: 32px minmax(0, 1fr) auto 20px;
+    gap: 12px;
+    padding: 18px 0;
+  }
+  .socialRow__label {
+    font-size: 15px;
+  }
+
+  /* ---- 8. project detail ---- */
+  .detail {
+    padding-top: 100px;
+  }
+  .detail__title {
+    font-size: clamp(32px, 9vw, 54px);
+  }
+  .detail__tagline {
+    font-size: 18px;
+  }
+  .detail__body {
+    margin-top: 50px;
+    gap: 40px;
+  }
+  .factList__row {
+    grid-template-columns: 90px 1fr;
+  }
+  .detail__gallerySection {
+    margin-top: 70px;
+  }
+  /* the lead image is `contain` in a 16/8.4 box — on a phone that leaves a
+     letterbox taller than the picture, so let it size to the picture instead */
+  .detail__lead figure {
+    aspect-ratio: auto;
+  }
+  .detail__lead img {
+    height: auto;
+  }
+}
+
+/* Nothing may push the page sideways. A single overflowing child on a phone
+   turns into a horizontal scrollbar across the whole site, and it is always
+   found late — this is the cheap insurance. */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}

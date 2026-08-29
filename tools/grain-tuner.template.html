@@ -1,0 +1,552 @@
+<title>Grain Calibration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a;
+  --ink: #e9ecf1;
+  --ink-2: #9aa2b0;
+  --ink-3: #616978;
+  --ink-4: #3a4150;
+  --accent: #4d9dff;
+  --accent-ghost: rgba(77, 157, 255, 0.12);
+  --cyan: #6fe3ff;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --shell: 1700px;
+  --gutter: 48px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* the four live variables the sliders drive */
+  --grain-size: 96px;
+  --grain-opacity: 0.055;
+  --vid-bright: 0.62;
+  --wash: 0.85;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, p, ul, li { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* =================================================================
+   STAGE
+   ================================================================= */
+.stage {
+  position: relative;
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.layer { position: absolute; inset: 0; pointer-events: none; }
+
+#video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(var(--vid-bright)) saturate(0.8) contrast(1.08);
+}
+
+.l-tone {
+  background:
+    radial-gradient(120% 90% at 78% 14%, rgba(77, 157, 255, 0.18) 0%, transparent 58%),
+    radial-gradient(90% 70% at 6% 96%, rgba(111, 227, 255, 0.08) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(6, 7, 10, 0.9) 0%, rgba(6, 7, 10, 0.3) 40%, rgba(6, 7, 10, 0.86) 84%, var(--bg) 100%);
+  opacity: var(--wash);
+}
+
+/* the grain itself — baseFrequency is high so the source noise is
+   per-pixel, then background-size shrinks the tile to go finer still */
+.l-grain {
+  inset: -120%;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: var(--grain-size) var(--grain-size);
+  animation: grainShift 0.6s steps(2) infinite;
+}
+
+@keyframes grainShift {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-1.4%, 1%); }
+  100% { transform: translate(1%, -0.8%); }
+}
+
+.l-vignette {
+  background: radial-gradient(100% 100% at 50% 50%, transparent 42%, rgba(2, 3, 5, 0.72) 100%);
+  opacity: calc(0.35 + var(--wash) * 0.65);
+}
+
+/* =================================================================
+   HERO CONTENT
+   ================================================================= */
+.hero {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 34px;
+  padding-bottom: 210px;
+}
+
+.hero__nav {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 40px; padding-bottom: 26px;
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand > i {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 0 4px var(--accent-ghost);
+}
+.brand b { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.14em; }
+.brand em {
+  display: block; font-family: var(--font-mono); font-style: normal;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3);
+}
+
+.navlinks { display: flex; gap: 38px; font-size: 13px; color: var(--ink-2); }
+.navlinks em {
+  font-family: var(--font-mono); font-style: normal; font-size: 9px;
+  color: var(--ink-4); margin-right: 8px;
+}
+
+.navcta {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 22px; border: 1px solid var(--line-strong);
+  border-radius: 999px; font-size: 12.5px; letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.03);
+}
+.navcta i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+}
+
+.hero__meta {
+  display: flex; align-items: center; gap: 30px;
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3);
+  padding-bottom: 20px; border-bottom: 1px solid var(--line);
+}
+.hero__meta .right { margin-left: auto; color: var(--ink-2); }
+
+.hero__main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.62fr);
+  gap: 70px;
+  align-items: end;
+  align-content: end;
+  padding: 48px 0 0;
+}
+
+.title {
+  display: flex; flex-direction: column;
+  font-weight: 500;
+  font-size: clamp(58px, 8.6vw, 168px);
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+}
+
+.title .serif {
+  width: fit-content;
+  font-family: var(--font-serif);
+  font-weight: 400; font-style: italic;
+  letter-spacing: -0.02em; padding-left: 0.06em;
+  background: linear-gradient(96deg, var(--ink) 8%, var(--accent) 108%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.title .dot {
+  display: inline-block; width: 0.11em; height: 0.11em;
+  margin-left: 0.1em; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 26px rgba(77, 157, 255, 0.55);
+}
+
+.aside { border-left: 1px solid var(--line); padding-left: 40px; padding-bottom: 10px; }
+
+.lede { font-size: clamp(18px, 1.3vw, 23px); line-height: 1.5; color: var(--ink-2); max-width: 30ch; }
+.lede em { font-family: var(--font-serif); font-style: italic; font-size: 1.16em; color: var(--ink); }
+
+.roles { display: flex; flex-wrap: wrap; margin-top: 24px; }
+.roles li {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3);
+  padding-right: 16px; margin-right: 16px; border-right: 1px solid var(--line-strong);
+}
+.roles li:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+.actions { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 14px 26px; border-radius: 999px;
+  font-size: 13px; letter-spacing: 0.05em; border: 1px solid transparent;
+}
+.btn--primary { background: var(--ink); color: #06070a; font-weight: 500; }
+.btn--ghost {
+  border-color: var(--line-strong); color: var(--ink-2);
+  font-family: var(--font-mono); font-size: 12px;
+}
+
+/* =================================================================
+   CONTROL PANEL
+   ================================================================= */
+.panel {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: min(1080px, calc(100vw - 40px));
+  padding: 20px 24px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 10, 16, 0.82);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62);
+  transition: transform 0.5s var(--ease), opacity 0.4s var(--ease);
+}
+
+.panel.is-hidden { transform: translateX(-50%) translateY(calc(100% + 40px)); opacity: 0; }
+
+.panel__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 20px; margin-bottom: 18px;
+}
+
+.panel__title {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3);
+}
+
+.presets { display: flex; gap: 6px; }
+
+.preset {
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-size: 11.5px; color: var(--ink-3);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+.preset:hover { color: var(--ink); border-color: var(--ink-4); }
+.preset[aria-pressed="true"] { background: var(--accent-ghost); border-color: rgba(77,157,255,0.4); color: var(--ink); }
+
+.sliders {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.ctrl label {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px; margin-bottom: 9px;
+}
+
+.ctrl .name { font-size: 12.5px; color: var(--ink-2); }
+.ctrl .hint { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; color: var(--ink-4); }
+.ctrl .val {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 20px; background: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px; border-radius: 2px; background: rgba(255, 255, 255, 0.16);
+}
+input[type="range"]::-moz-range-track {
+  height: 2px; border-radius: 2px; background: rgba(255, 255, 255, 0.16);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 13px; margin-top: -5.5px;
+  border-radius: 50%; background: var(--ink);
+  border: 3px solid #0a0d14; box-shadow: 0 0 0 1px rgba(255,255,255,0.25);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--ink); border: 3px solid #0a0d14;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.25);
+}
+input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.panel__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-top: 18px; padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.readout {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--ink-2); letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+.readout b { color: var(--accent); font-weight: 400; }
+
+.panel__note { font-size: 11.5px; color: var(--ink-4); }
+
+.toggle {
+  position: fixed; right: 24px; bottom: 24px; z-index: 61;
+  padding: 10px 18px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(8, 10, 16, 0.8);
+  backdrop-filter: blur(18px);
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3);
+}
+.toggle:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .l-grain { animation: none; }
+}
+
+@media (max-width: 1100px) {
+  :root { --gutter: 28px; }
+  .hero__main { grid-template-columns: 1fr; align-items: start; gap: 36px; }
+  .aside { border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 26px; }
+  .navlinks { display: none; }
+  .sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+
+<div class="stage">
+  <video id="video" autoplay muted loop playsinline poster="__POSTER__">
+    <source src="__VIDEO__" type="video/mp4">
+  </video>
+
+  <div class="layer l-tone"></div>
+  <div class="layer l-grain"></div>
+  <div class="layer l-vignette"></div>
+
+  <div class="hero shell">
+    <div>
+      <div class="hero__nav">
+        <div class="brand">
+          <i></i>
+          <span><b>PEI JIXIAN LIU</b><em>Costume Designer</em></span>
+        </div>
+        <div class="navlinks">
+          <span><em>01</em>About</span>
+          <span><em>02</em>Work</span>
+          <span><em>03</em>Capabilities</span>
+          <span><em>04</em>Contact</span>
+        </div>
+        <span class="navcta"><i></i>Get in touch</span>
+      </div>
+
+      <div class="hero__meta">
+        <span>Los Angeles, CA</span>
+        <span id="clock">--:--:-- PT</span>
+        <span class="right">Available for travel</span>
+      </div>
+    </div>
+
+    <div class="hero__main">
+      <h1 class="title">
+        <span>PEI JIXIAN</span>
+        <span class="serif">Liu<i class="dot"></i></span>
+      </h1>
+
+      <div class="aside">
+        <p class="lede">Designing <em>character</em> for stage, screen and synthetic worlds.</p>
+        <ul class="roles">
+          <li>Costume Designer</li>
+          <li>AI Visual Artist</li>
+          <li>Character Designer</li>
+        </ul>
+        <div class="actions">
+          <span class="btn btn--primary">Selected Work</span>
+          <span class="btn btn--ghost">jixian.liu99@gmail.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel">
+  <div class="panel__head">
+    <span class="panel__title">Grain calibration · 颗粒调校</span>
+    <div class="presets">
+      <button class="preset" data-preset="whisper">最轻 Whisper</button>
+      <button class="preset" data-preset="balanced" aria-pressed="true">平衡 Balanced</button>
+      <button class="preset" data-preset="filmic">偏胶片 Filmic</button>
+    </div>
+  </div>
+
+  <div class="sliders">
+    <div class="ctrl">
+      <label for="s-size">
+        <span><span class="name">颗粒细度</span> <span class="hint">越小越细</span></span>
+        <span class="val" id="v-size">96px</span>
+      </label>
+      <input type="range" id="s-size" min="32" max="240" step="4" value="96">
+    </div>
+
+    <div class="ctrl">
+      <label for="s-op">
+        <span><span class="name">颗粒浓度</span> <span class="hint">越小越透</span></span>
+        <span class="val" id="v-op">0.055</span>
+      </label>
+      <input type="range" id="s-op" min="0.005" max="0.18" step="0.005" value="0.055">
+    </div>
+
+    <div class="ctrl">
+      <label for="s-bright">
+        <span><span class="name">画面亮度</span> <span class="hint">视频本身</span></span>
+        <span class="val" id="v-bright">0.62</span>
+      </label>
+      <input type="range" id="s-bright" min="0.3" max="1" step="0.01" value="0.62">
+    </div>
+
+    <div class="ctrl">
+      <label for="s-wash">
+        <span><span class="name">压暗层</span> <span class="hint">渐变遮罩</span></span>
+        <span class="val" id="v-wash">0.85</span>
+      </label>
+      <input type="range" id="s-wash" min="0.2" max="1" step="0.02" value="0.85">
+    </div>
+  </div>
+
+  <div class="panel__foot">
+    <span class="readout" id="readout"></span>
+    <span class="panel__note">调到满意后，把这一行数字发我，我就把它固化进 hero.css</span>
+  </div>
+</div>
+
+<button class="toggle" id="toggle">Hide panel</button>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY = 'pei-grain-tuner-v1';
+
+  var fields = {
+    size:   { el: document.getElementById('s-size'),   out: document.getElementById('v-size'),   css: '--grain-size',    unit: 'px' },
+    op:     { el: document.getElementById('s-op'),     out: document.getElementById('v-op'),     css: '--grain-opacity', unit: ''   },
+    bright: { el: document.getElementById('s-bright'), out: document.getElementById('v-bright'), css: '--vid-bright',    unit: ''   },
+    wash:   { el: document.getElementById('s-wash'),   out: document.getElementById('v-wash'),   css: '--wash',          unit: ''   }
+  };
+
+  var PRESETS = {
+    whisper:  { size: 64,  op: 0.03,  bright: 0.74, wash: 0.68 },
+    balanced: { size: 96,  op: 0.055, bright: 0.62, wash: 0.85 },
+    filmic:   { size: 160, op: 0.105, bright: 0.5,  wash: 1.0  }
+  };
+
+  var readout = document.getElementById('readout');
+
+  function fmt(key, v) {
+    return key === 'size' ? Math.round(v) + 'px' : Number(v).toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+  }
+
+  function apply() {
+    Object.keys(fields).forEach(function (k) {
+      var f = fields[k];
+      var v = f.el.value;
+      root.style.setProperty(f.css, v + f.unit);
+      f.out.textContent = fmt(k, v);
+    });
+
+    readout.innerHTML =
+      'grain <b>' + fmt('size', fields.size.el.value) + '</b> / <b>' + fmt('op', fields.op.el.value) + '</b>' +
+      ' · brightness <b>' + fmt('bright', fields.bright.el.value) + '</b>' +
+      ' · wash <b>' + fmt('wash', fields.wash.el.value) + '</b>';
+
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        size: fields.size.el.value, op: fields.op.el.value,
+        bright: fields.bright.el.value, wash: fields.wash.el.value
+      }));
+    } catch (e) { /* private window, ignore */ }
+  }
+
+  Object.keys(fields).forEach(function (k) {
+    fields[k].el.addEventListener('input', function () {
+      document.querySelectorAll('.preset').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      apply();
+    });
+  });
+
+  document.querySelectorAll('.preset').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var p = PRESETS[btn.dataset.preset];
+      if (!p) return;
+      fields.size.el.value = p.size;
+      fields.op.el.value = p.op;
+      fields.bright.el.value = p.bright;
+      fields.wash.el.value = p.wash;
+      document.querySelectorAll('.preset').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      apply();
+    });
+  });
+
+  // restore a previous session's dial-in, if any
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved) {
+      Object.keys(fields).forEach(function (k) {
+        if (saved[k] != null) fields[k].el.value = saved[k];
+      });
+      document.querySelectorAll('.preset').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    }
+  } catch (e) { /* ignore */ }
+
+  apply();
+
+  var panel = document.getElementById('panel');
+  var toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', function () {
+    var hidden = panel.classList.toggle('is-hidden');
+    toggle.textContent = hidden ? 'Show panel' : 'Hide panel';
+  });
+
+  var clock = document.getElementById('clock');
+  function tick() {
+    try {
+      clock.textContent = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit',
+        second: '2-digit', hour12: false
+      }).format(new Date()) + ' PT';
+    } catch (e) { /* no-op */ }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  var v = document.getElementById('video');
+  var play = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+  play();
+  document.addEventListener('click', play, { once: true });
+})();
+</script>

@@ -1,0 +1,340 @@
+/* =============== head =============== */
+.works__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 60px;
+  align-items: end;
+  margin-bottom: 76px;
+}
+
+.works__title {
+  margin-top: 26px;
+  max-width: 16ch;
+}
+
+.works__filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 11px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 12.5px;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  background: transparent;
+  transition:
+    color 0.4s var(--ease),
+    border-color 0.4s var(--ease),
+    background 0.4s var(--ease);
+}
+
+.chip sup {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-4);
+  transition: color 0.4s var(--ease);
+}
+
+.chip:hover {
+  color: var(--ink);
+  border-color: var(--ink-4);
+}
+
+.chip.is-active {
+  color: #05070c;
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.chip.is-active sup {
+  color: rgba(5, 7, 12, 0.55);
+}
+
+/* =============== grid =============== */
+.works__grid {
+  display: grid;
+  gap: 26px;
+}
+
+.works__grid--editorial {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-flow: dense;
+}
+
+.works__grid--uniform {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* `full` exists so a single card can be added without breaking the row maths.
+   Rows of 6 can only be 4+2 or 3+3, so every wide card needs a tall partner —
+   which means an odd card added on its own always leaves a hole. A full-width
+   row is the one shape that stands alone. */
+.works__grid--editorial .card--full {
+  grid-column: span 6;
+}
+
+.works__grid--editorial .card--wide {
+  grid-column: span 4;
+}
+.works__grid--editorial .card--standard {
+  grid-column: span 3;
+}
+.works__grid--editorial .card--tall {
+  grid-column: span 2;
+}
+
+/* =============== card =============== */
+.card {
+  min-width: 0;
+}
+
+.card__link {
+  display: block;
+}
+
+.card__media {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+}
+
+.works__grid--editorial .card--tall .card__media {
+  aspect-ratio: 3 / 4.35;
+}
+.works__grid--editorial .card--wide .card__media {
+  aspect-ratio: 16 / 9.4;
+}
+.works__grid--editorial .card--full .card__media {
+  /* cinemascope — a full-width 16:9 band would be ~900px tall */
+  aspect-ratio: 21 / 9;
+}
+.works__grid--uniform .card__media {
+  aspect-ratio: 4 / 4.4;
+}
+
+.card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.14) brightness(0.98) contrast(1.02);
+  transform: scale(1.01);
+  transition:
+    transform 1.5s var(--ease),
+    filter 0.9s var(--ease);
+}
+
+.card:hover .card__media img {
+  transform: scale(1.06);
+  filter: grayscale(0) brightness(1.03) contrast(1.01);
+}
+
+.card__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 10, 0.5) 0%,
+    rgba(4, 6, 10, 0.05) 34%,
+    rgba(4, 6, 10, 0.72) 100%
+  );
+  transition: opacity 0.7s var(--ease);
+}
+
+.card:hover .card__veil {
+  opacity: 0.86;
+}
+
+.card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.6s var(--ease);
+}
+
+.card:hover .card__media::after {
+  border-color: var(--accent-line);
+}
+
+/* ---- kicker ----
+   The index and category used to sit inside the image. Real production
+   stills broke that: a white-background character sheet swallowed the white
+   labels, and the Youku still already has a channel bug in that corner. They
+   live under the picture now, where nothing competes with them. */
+.card__kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 11px;
+  margin-bottom: 12px;
+  font-size: 10px;
+  color: var(--ink-3);
+}
+
+.card__idx {
+  color: var(--accent);
+}
+
+.card__award {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-line);
+  background: rgba(6, 10, 18, 0.66);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.card__award i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.card:hover .card__award {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* ---- hover panel ---- */
+.card__hover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 26px 24px 24px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
+}
+
+.card:hover .card__hover {
+  opacity: 1;
+  transform: none;
+}
+
+.card__hover p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 46ch;
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.card__tags li {
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  background: rgba(6, 10, 18, 0.5);
+}
+
+/* ---- meta under the image ---- */
+.card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px 2px 0;
+}
+
+.card__title {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 0.4s var(--ease);
+}
+
+.card:hover .card__title {
+  color: var(--accent);
+}
+
+.card__sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.card__metaSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.card__role {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+@media (max-width: 1100px) {
+  .works__head {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 30px;
+  }
+  .works__filters {
+    justify-content: flex-start;
+  }
+  /* below this width the editorial spans stop being useful — go two-up */
+  .works__grid--editorial {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .works__grid--editorial .card {
+    grid-column: auto;
+  }
+  .works__grid--uniform {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .works__grid--editorial,
+  .works__grid--uniform {
+    grid-template-columns: 1fr;
+  }
+}
