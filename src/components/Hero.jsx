@@ -90,7 +90,7 @@ export default function Hero() {
         </div>
 
         <div className="hero__foot">
-          <a className="hero__scroll" href="#about">
+          <a className="hero__scroll" href="#work">
             <span className="hero__scrollRail" aria-hidden="true">
               <i />
             </span>

@@ -43,8 +43,10 @@ export default function App() {
         ) : (
           <>
             <Hero />
-            <About />
+            {/* Work before About on purpose: a visitor should meet the
+                portfolio first and the person second. */}
             <Works />
+            <About />
             <Capabilities />
             <Contact />
           </>

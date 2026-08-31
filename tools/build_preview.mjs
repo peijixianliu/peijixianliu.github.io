@@ -180,7 +180,7 @@ const heroHtml = `
     </div>
 
     <div class="hero__foot">
-      <a class="hero__scroll" href="#about"><span class="hero__scrollRail"><i></i></span><span class="mono">Scroll</span></a>
+      <a class="hero__scroll" href="#work"><span class="hero__scrollRail"><i></i></span><span class="mono">Scroll</span></a>
       <ul class="hero__index"><li><b>01</b> Stage</li><li><b>02</b> Screen</li><li><b>03</b> Synthetic</li></ul>
     </div>
   </div>
@@ -655,8 +655,8 @@ ${navHtml}
 <main>
 <div id="homeRoot">
 ${heroHtml}
-${aboutHtml}
 ${worksHtml}
+${aboutHtml}
 ${capsHtml}
 ${contactHtml}
 </div>

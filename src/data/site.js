@@ -392,9 +392,11 @@ export const contact = {
   ],
 }
 
+/* order here drives the nav, its 01–04 numbering, and nothing else — it must
+   match the section order in App.jsx */
 export const nav = [
-  { id: 'about', label: 'About' },
   { id: 'work', label: 'Work' },
+  { id: 'about', label: 'About' },
   { id: 'capabilities', label: 'Capabilities' },
   { id: 'contact', label: 'Contact' },
 ]
