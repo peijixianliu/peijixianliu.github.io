@@ -331,7 +331,7 @@ const contactHtml = `
       ${contact.socials
         .map(
           (s, i) => `
-      <a class="socialRow" href="${s.href}"><span class="socialRow__idx mono">${pad(i + 1)}</span><span class="socialRow__label">${esc(s.label)}</span><span class="socialRow__handle">${esc(s.handle)}</span><span class="socialRow__arrow">↗</span></a>`
+      <a class="socialRow" href="${s.href}" target="_blank" rel="noreferrer"><span class="socialRow__idx mono">${pad(i + 1)}</span><span class="socialRow__label">${esc(s.label)}</span><span class="socialRow__handle">${esc(s.handle)}</span><span class="socialRow__arrow">↗</span></a>`
         )
         .join('')}
     </div>
@@ -681,6 +681,7 @@ const localBody = body.replace(imgMapLiteral, localImgMap).replace(
 )
 const local = standalone
   .replace(body, localBody)
+  .replace('href="resume/', 'href="public/resume/')
   .replace('<title>Pei', '<title>[local, full quality] Pei')
 
 /* ---------- docs/ : the deployable static site ----------
@@ -709,6 +710,7 @@ await mkdir(docs, { recursive: true })
 await writeFile(path.join(docs, 'index.html'), docsHtml)
 await cp(path.join(root, 'public/images'), path.join(docs, 'images'), { recursive: true })
 await cp(path.join(root, 'public/media'), path.join(docs, 'media'), { recursive: true })
+await cp(path.join(root, 'public/resume'), path.join(docs, 'resume'), { recursive: true })
 /* stops Pages running the output through Jekyll, which ignores files and
    folders beginning with an underscore */
 await writeFile(path.join(docs, '.nojekyll'), '')

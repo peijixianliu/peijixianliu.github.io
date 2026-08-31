@@ -369,11 +369,26 @@ export const contact = {
   email: 'jixian.liu99@gmail.com',
   location: 'Los Angeles, CA',
   // Replace the "#" values with your real profile URLs.
+  /* `href` is used verbatim. Anything starting with http opens in a new tab
+     (see Contact.jsx). The résumé path is RELATIVE on purpose: the site is one
+     document with a hash router, so it resolves the same whether the site is
+     served from a domain root or a /repo/ sub-path. */
   socials: [
-    { label: 'Instagram', href: '#', handle: '@peiliu.design' },
-    { label: 'ArtStation', href: '#', handle: 'peiliu' },
-    { label: 'LinkedIn', href: '#', handle: 'Pei Jixian Liu' },
-    { label: 'Résumé (PDF)', href: '#', handle: 'Download' },
+    {
+      label: 'Instagram',
+      href: 'https://www.instagram.com/pei_jixian/',
+      handle: '@pei_jixian',
+    },
+    {
+      label: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/pei-liu-8126502b0/',
+      handle: 'Pei Jixian Liu',
+    },
+    {
+      label: 'Résumé (PDF)',
+      href: 'resume/Pei-Jixian-Liu-CV.pdf',
+      handle: 'Download',
+    },
   ],
 }
 
