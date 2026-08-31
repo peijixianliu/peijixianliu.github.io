@@ -6,10 +6,14 @@ is far from its slot loses its edges — and these are line-ups, where an edge
 is a whole character. Rather than reshape the grid, each sheet is prepared to
 its slot's exact ratio here, so the browser has nothing left to crop:
 
-  bikura  wide     16:9.4   left alone (a 4% side trim clears every figure)
-  shrike  standard 4:3      cropped to the LEFT TWO figures, then padded
-  semfa   wide     16:9.4   cropped to the LEFT TWO figures, then padded
+  bikura  wide     16:9.4   left alone (a 2% side trim clears every figure)
+  shrike  standard 4:3      all four kept, padded top and bottom
+  semfa   wide     16:9.4   all four kept, padded top and bottom
   tuk     standard 4:3      all four kept, padded top and bottom
+
+All four sheets now keep every view. Shrike and Semfa were once cut down to
+their left two figures to fill their slots; padding them to height instead
+keeps the full turnaround, which is what the sheets are for.
 
 Padding extends the sheets' white and gradient grounds. The fill is the
 per-row MEDIAN of a band of background-only columns, not a copy of one column:
@@ -32,13 +36,19 @@ WIDE = 16 / 9.4       # .card--wide
 STANDARD = 4 / 3      # .card--standard
 
 # (file, label, slot ratio, crop window or None, background column bands to
-# median for the side fill — coordinates are in the CROPPED image)
+# median for the side fill, vertical padding anchor)
+#
+# `anchor` decides where added HEIGHT goes. "center" splits it top and bottom,
+# which needs both edge rows to be clean background. Semfa's bottom row runs
+# straight through the dress hems and their floor shadows, and stretching that
+# row downwards smears them into vertical streaks — so its padding all goes
+# above the heads, where the sheet is empty white.
 JOBS = [
     # bikura is left alone: its 1.777 in a 1.702 frame trims 2% a side, which
     # clears every figure, and padding it smeared the grass along the bottom.
-    ("work-ai-02.jpg", "shrike", STANDARD, (0, 0, 930, None), [(0, 110), (830, 925)]),
-    ("work-ai-03.jpg", "semfa", WIDE, (0, 0, 710, None), [(0, 60), (630, 705)]),
-    ("work-ai-04.jpg", "tuk", STANDARD, None, None),
+    ("work-ai-02.jpg", "shrike", STANDARD, None, None, "center"),
+    ("work-ai-03.jpg", "semfa", WIDE, None, None, "top"),
+    ("work-ai-04.jpg", "tuk", STANDARD, None, None, "center"),
 ]
 
 
@@ -50,7 +60,7 @@ def background_column(im, bands):
     return Image.fromarray(med[:, None, :], "RGB")
 
 
-def pad_to_ratio(im, target, bands=None):
+def pad_to_ratio(im, target, bands=None, anchor="center"):
     """Grow the canvas to `target`, filling with clean background."""
     w, h = im.size
     if w / h < target:                      # too narrow — add width
@@ -65,15 +75,22 @@ def pad_to_ratio(im, target, bands=None):
         return out
     new_h = round(w / target)               # too wide — add height
     extra = new_h - h
-    top, bottom = extra // 2, extra - extra // 2
+    if anchor == "top":                     # all of it above the figures
+        top, bottom = extra, 0
+    elif anchor == "bottom":
+        top, bottom = 0, extra
+    else:
+        top, bottom = extra // 2, extra - extra // 2
     out = Image.new("RGB", (w, new_h))
-    out.paste(im.crop((0, 0, w, 1)).resize((w, top)), (0, 0))
+    if top:
+        out.paste(im.crop((0, 0, w, 1)).resize((w, top)), (0, 0))
     out.paste(im, (0, top))
-    out.paste(im.crop((0, h - 1, w, h)).resize((w, bottom)), (0, top + h))
+    if bottom:
+        out.paste(im.crop((0, h - 1, w, h)).resize((w, bottom)), (0, top + h))
     return out
 
 
-for name, label, target, window, bands in JOBS:
+for name, label, target, window, bands, anchor in JOBS:
     path = os.path.join(OUT, name)
     im = Image.open(path).convert("RGB")
     before = im.size
@@ -86,7 +103,7 @@ for name, label, target, window, bands in JOBS:
         x0, y0, x1, y1 = window
         im = im.crop((x0, y0, x1, y1 if y1 is not None else im.size[1]))
 
-    im = pad_to_ratio(im, target, bands)
+    im = pad_to_ratio(im, target, bands, anchor)
     im.save(path, "JPEG", quality=88, optimize=True, progressive=True)
     print(
         f"{label:<8} {before[0]}x{before[1]} -> {im.size[0]}x{im.size[1]}"
