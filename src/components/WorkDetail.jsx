@@ -12,10 +12,13 @@ export default function WorkDetail({ id }) {
      from tools/build_galleries.py is used. The generated shape is already
      packed into justified rows ([{ shots, pad }]); a hand-written flat list is
      wrapped so both render through the same code. */
-  const rows = detail?.gallery?.length
-    ? detail.gallery.map((s) => ({ shots: [s] }))
+  const sections = detail?.gallery?.length
+    ? [{ rows: detail.gallery.map((s) => ({ shots: [s] })) }]
     : galleries[id] || []
-  const shotCount = rows.reduce((n, row) => n + row.shots.length, 0)
+  const shotCount = sections.reduce(
+    (n, sec) => n + sec.rows.reduce((m, row) => m + row.shots.length, 0),
+    0
+  )
 
   if (!work) {
     return (
@@ -147,45 +150,64 @@ export default function WorkDetail({ id }) {
           </div>
 
           <div className="detail__gallery">
-            {rows.map((row, ri) => {
-              const before = rows
-                .slice(0, ri)
-                .reduce((n, r) => n + r.shots.length, 0)
-              return (
-                <div className="shotRow" key={ri}>
-                  {row.shots.map((item, i) => (
-                    <Reveal
-                      as="figure"
-                      key={item.src}
-                      delay={i * 70}
-                      className="shot"
-                      /* flex-grow is the image's aspect ratio — that is what
-                         makes every image in the row the same height */
-                      style={{ '--r': item.r || 1.5 }}
-                    >
-                      <div className="shot__frame">
-                        <img
-                          src={item.src}
-                          alt={item.caption || work.title}
-                          loading="lazy"
-                        />
-                        <span className="shot__idx mono">
-                          {String(before + i + 1).padStart(2, '0')}
-                        </span>
-                      </div>
-                      {item.caption && (
-                        <figcaption className="shot__caption">
-                          {item.caption}
-                        </figcaption>
+            {(() => {
+              let n = 0
+              return sections.map((section, si) => (
+                <div className="galSection" key={si}>
+                  {section.title && (
+                    <header className="galSection__head">
+                      <span className="galSection__idx mono">
+                        {String(si + 1).padStart(2, '0')}
+                      </span>
+                      <h3 className="galSection__title">{section.title}</h3>
+                      {section.note && (
+                        <span className="galSection__note mono">{section.note}</span>
                       )}
-                    </Reveal>
-                  ))}
-                  {row.pad > 0 && (
-                    <i className="shotRow__pad" style={{ flexGrow: row.pad }} />
+                    </header>
                   )}
+
+                  {section.rows.map((row, ri) => (
+                    <div className="shotRow" key={ri}>
+                      {row.shots.map((item, i) => {
+                        n += 1
+                        const idx = n
+                        return (
+                          <Reveal
+                            as="figure"
+                            key={item.src}
+                            delay={i * 70}
+                            className="shot"
+                            /* flex-grow is the image's aspect ratio — that is
+                               what makes every image in the row the same
+                               height */
+                            style={{ '--r': item.r || 1.5 }}
+                          >
+                            <div className="shot__frame">
+                              <img
+                                src={item.src}
+                                alt={item.caption || work.title}
+                                loading="lazy"
+                              />
+                              <span className="shot__idx mono">
+                                {String(idx).padStart(2, '0')}
+                              </span>
+                            </div>
+                            {item.caption && (
+                              <figcaption className="shot__caption">
+                                {item.caption}
+                              </figcaption>
+                            )}
+                          </Reveal>
+                        )
+                      })}
+                      {row.pad > 0 && (
+                        <i className="shotRow__pad" style={{ flexGrow: row.pad }} />
+                      )}
+                    </div>
+                  ))}
                 </div>
-              )
-            })}
+              ))
+            })()}
           </div>
         </section>
       )}

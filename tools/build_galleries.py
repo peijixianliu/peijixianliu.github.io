@@ -40,7 +40,36 @@ import sys
 
 from PIL import Image, ImageOps
 
-SRC = "/mnt/user-data/uploads/网页文件"
+
+def _source_folder():
+    """Where the original photographs live.
+
+    Order: the PORTFOLIO_SRC environment variable, then the first of the
+    known locations that exists. Set the variable (or add a path here) and
+    these tools run anywhere — on the machine that holds the photos, not just
+    in the session that built the site.
+
+        Windows :  set PORTFOLIO_SRC=C:\\Users\\Pei\\Desktop\\网页文件
+        macOS   :  export PORTFOLIO_SRC=~/Desktop/网页文件
+    """
+    candidates = [
+        os.environ.get("PORTFOLIO_SRC"),
+        "/mnt/user-data/uploads/网页文件",
+        os.path.expanduser("~/Desktop/网页文件"),
+        os.path.expanduser("~/Desktop/web-source"),
+    ]
+    for c in candidates:
+        if c and os.path.isdir(os.path.expanduser(c)):
+            return os.path.expanduser(c)
+    raise SystemExit(
+        "Cannot find the source folder.\n"
+        "Point PORTFOLIO_SRC at the folder that holds one subfolder per "
+        "project, e.g.\n"
+        "    set PORTFOLIO_SRC=C:\\Users\\Pei\\Desktop\\网页文件"
+    )
+
+
+SRC = _source_folder()
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUT = os.path.join(ROOT, "public", "images", "gal")
 MANIFEST = os.path.join(ROOT, "src", "data", "galleries.js")
@@ -104,6 +133,33 @@ CAPTIONS = {
     "enviornment": "Selected sketches — tents, cave mouths, weather",
     "enviroment": "Scenic research — lightning field, ash from a burnt-out fire",
 }
+
+
+# ---- sections --------------------------------------------------------------
+# A project whose Gallery/ is split into subfolders can have those subfolders
+# become titled sections, in a stated order, with a rule between them. Keys are
+# the subfolder names as they appear on disk, matched case-insensitively; the
+# value is (heading, right-hand note). A subfolder not listed here, or a project
+# not listed at all, just runs as one untitled section.
+SECTIONS = {
+    "work-theater-03": {              # Dance / Light — four pieces, four
+        "order": ["olivia", "daniel", "justinbiber", "spark"],
+        "titles": {
+            "olivia": ("Olivia Ruhnke", "2026"),
+            "daniel": ("Daniel Bamdad", "2026"),
+            # the folder is named after the music, not the choreographer
+            "justinbiber": ("Benji Santiago", "2024"),
+            "spark": ("Kiara Lee", "2024"),
+        },
+    },
+}
+
+
+def section_key(path, base):
+    """The immediate subfolder under Gallery/, lowercased. '' if none."""
+    rel = os.path.relpath(path, base).replace("\\", "/").split("/")
+    # rel[0] is the Gallery folder itself
+    return rel[1].lower() if len(rel) > 2 else ""
 
 
 def caption_for(path):
@@ -204,43 +260,85 @@ def main():
                           else f"{work_id:<24} —      Gallery folder is empty")
             continue
 
-        shots = []
-        for n, src in enumerate(files, 1):
-            im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
-            im.thumbnail((LONG_EDGE, LONG_EDGE), Image.LANCZOS)
-            name = f"{slot}-g{n:02d}.jpg"
-            im.save(os.path.join(OUT, name), "JPEG",
-                    quality=QUALITY, optimize=True, progressive=True)
-            shots.append({
-                "src": f"/images/gal/{name}",
-                "caption": caption_for(src),
-                "r": round(im.size[0] / im.size[1], 4),
-            })
+        # group by subfolder, in the configured order; anything unlisted keeps
+        # its natural sort position after the named ones
+        cfg = SECTIONS.get(slot, {})
+        order = cfg.get("order", [])
+        groups = {}
+        for f in files:
+            groups.setdefault(section_key(f, base), []).append(f)
+        keys = [k for k in order if k in groups] + \
+               [k for k in groups if k not in order]
 
-        rows = [{"shots": [shots[i] for i in r]}
-                for r in pack([s["r"] for s in shots])]
-        add_tail_pad(rows)
-        manifest[work_id] = rows
+        # The file NUMBER comes from the natural sort, not from the section
+        # order, so grouping or reordering sections never renames a single
+        # image on disk. What a visitor sees numbered 01, 02, … is the render
+        # order, which is computed at display time.
+        number = {f: i for i, f in enumerate(files, 1)}
 
-        heights = [row_height(r) for r in rows]
-        report.append(f"{work_id:<24} {len(shots):>3} images, {len(rows):>2} rows"
+        sections, heights = [], []
+        for key in keys:
+            shots = []
+            for src in groups[key]:
+                im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+                im.thumbnail((LONG_EDGE, LONG_EDGE), Image.LANCZOS)
+                name = f"{slot}-g{number[src]:02d}.jpg"
+                im.save(os.path.join(OUT, name), "JPEG",
+                        quality=QUALITY, optimize=True, progressive=True)
+                shots.append({
+                    "src": f"/images/gal/{name}",
+                    "caption": caption_for(src),
+                    "r": round(im.size[0] / im.size[1], 4),
+                })
+
+            # each section is packed on its own, so a row never straddles two
+            # pieces and every section ends on a flush line
+            rows = [{"shots": [shots[i] for i in r]}
+                    for r in pack([s["r"] for s in shots])]
+            add_tail_pad(rows)
+            heights += [row_height(r) for r in rows]
+
+            title, note = cfg.get("titles", {}).get(key, (None, None))
+            section = {"rows": rows}
+            if title:
+                section["title"] = title
+                if note:
+                    section["note"] = note
+            sections.append(section)
+
+        manifest[work_id] = sections
+
+        titled = sum(1 for x in sections if x.get("title"))
+        report.append(f"{work_id:<24} {len(files):>3} images, {len(heights):>2} rows"
                       f"  row heights {min(heights)}–{max(heights)}px"
+                      + (f", {titled} sections" if titled else "")
                       + (f"  (skipped {len(skipped_media)} video)" if skipped_media else ""))
 
     body = json.dumps(manifest, indent=2, ensure_ascii=False)
     with open(MANIFEST, "w", encoding="utf-8") as f:
         f.write(
             "/* GENERATED by tools/build_galleries.py — do not edit by hand.\n"
-            "   One entry per project, already packed into justified rows: each\n"
-            "   inner array is one row, and `r` is the image's aspect ratio, which\n"
-            "   CSS uses as flex-grow so a row's images share the width in\n"
-            "   proportion and all come out the same height. Nothing is cropped.\n"
-            "   A hand-written `gallery` in workDetails.js overrides the entry\n"
-            "   here; anything else falls through to this file. */\n\n"
+            "\n"
+            "   galleries[workId] = [ section, ... ]\n"
+            "     section = { title?, note?, rows: [ { shots, pad? }, ... ] }\n"
+            "\n"
+            "   A gallery is a list of SECTIONS. Most projects have exactly one,\n"
+            "   untitled. A project whose Gallery/ folder is split into subfolders\n"
+            "   (Dance / Light — one per piece) gets one titled section each, with\n"
+            "   a rule between them; rows are packed inside a section so a row\n"
+            "   never straddles two pieces.\n"
+            "\n"
+            "   Inside a section each entry is one justified row, and `r` is the\n"
+            "   image's aspect ratio, which CSS uses as flex-grow so a row's images\n"
+            "   share the width in proportion and all come out the same height.\n"
+            "   Nothing is cropped. A hand-written `gallery` in workDetails.js\n"
+            "   overrides the entry here; anything else falls through to this file.\n"
+            "*/\n\n"
             f"export const galleries = {body}\n"
         )
 
-    total = sum(len(r["shots"]) for rows in manifest.values() for r in rows)
+    total = sum(len(r["shots"]) for secs in manifest.values()
+                for sec in secs for r in sec["rows"])
     print("\n".join(report))
     print(f"\n{len(manifest)} galleries, {total} images -> "
           f"{os.path.relpath(MANIFEST, ROOT)}")

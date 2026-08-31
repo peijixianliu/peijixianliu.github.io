@@ -74,7 +74,39 @@ tools/build_preview.mjs      ← builds the dependency-free preview HTML
 
 ## Images
 
-Run, in this order — each step reads what the one before it wrote:
+### Adding or removing images
+
+Everything comes from one folder of originals — one subfolder per project, with
+an optional `Gallery/` inside it:
+
+```
+网页文件/
+  arcadia/
+    55116808472_o.jpg        <- first file = the card cover and lead image
+    Gallery/                 <- everything in here is the gallery
+      CMUAracadiaBB_032.JPG
+      ...
+  dance-light/
+    P1466552.jpg
+    Gallery/
+      olivia/ daniel/ Justinbiber/ spark/   <- subfolders become sections
+```
+
+**To add images**, drop them in the project's `Gallery/` folder. **To remove
+one**, delete it. **To change a cover**, make the file you want sort first, or
+rename the current one so it doesn't. Then re-run the three steps below.
+
+Deleting a `Gallery/` folder removes that project's gallery entirely — that is
+how She Is Just Her opts out.
+
+The tools find the folder from `PORTFOLIO_SRC`, falling back to a few known
+locations. Set it once per terminal:
+
+```bat
+set PORTFOLIO_SRC=C:\Users\Pei\Desktop\网页文件
+```
+
+Then run, in this order — each step reads what the one before it wrote:
 
 ```bash
 python3 tools/import_images.py     # covers   -> public/images/
@@ -119,6 +151,14 @@ row above by a phantom spacer rather than stretching one image across the page.
 
 `GAP` and `SHELL` in the script mirror `--gap` in `.detail__gallery` and the
 shell width. **Change one and change the other**, or the row heights drift.
+
+**Sections.** If a project's `Gallery/` folder is split into subfolders, each
+subfolder can become a titled section with a rule above it — Dance / Light is
+four pieces, one folder each, headed by the choreographer. Configure the order
+and the headings in `SECTIONS` in `build_galleries.py`, keyed by folder name
+(matched case-insensitively). Rows are packed inside a section, so a row never
+straddles two pieces. Image FILENAMES follow the natural sort, not the section
+order, so regrouping never renames anything on disk.
 
 Captions are only for the Hyperion process boards — a research sheet or a node
 graph is unreadable without a label. They live in the `CAPTIONS` dict in the

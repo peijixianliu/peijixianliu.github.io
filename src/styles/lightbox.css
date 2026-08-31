@@ -1,0 +1,209 @@
+/* =================================================================
+   LIGHTBOX — click a gallery image to see it full screen
+   ================================================================= */
+
+/* the affordance: without this the picture does not look clickable */
+.detail__gallery .shot__frame {
+  cursor: zoom-in;
+}
+
+.detail__gallery .shot:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.detail__gallery .shot__frame::before {
+  content: '';
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    /* two short strokes making a diagonal expand mark */
+    linear-gradient(currentColor, currentColor) 10px 10px / 7px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 10px 10px / 1px 7px no-repeat,
+    linear-gradient(currentColor, currentColor) 13px 19px / 7px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 19px 13px / 1px 7px no-repeat,
+    rgba(6, 10, 18, 0.62);
+  color: var(--ink);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+  pointer-events: none;
+}
+
+.detail__gallery .shot:hover .shot__frame::before,
+.detail__gallery .shot:focus-visible .shot__frame::before {
+  opacity: 1;
+  transform: none;
+}
+
+/* the page behind must not scroll while the viewer is open */
+html.has-lbox,
+html.has-lbox body {
+  overflow: hidden;
+}
+
+/* ---------- overlay ---------- */
+.lbox {
+  position: fixed;
+  inset: 0;
+  /* above the sticky nav (900) and the site-wide grain layer (9998) — the
+     viewer must be the only thing on screen */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 76px 84px;
+  background: rgba(4, 6, 10, 0.94);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  transition: opacity 0.32s var(--ease);
+}
+
+.lbox.is-open {
+  opacity: 1;
+}
+
+.lbox__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.lbox__img {
+  display: block;
+  max-width: 100%;
+  /* leave room for the caption line under it */
+  max-height: calc(100vh - 190px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  transform: scale(0.985);
+  transition: transform 0.32s var(--ease);
+}
+
+.lbox.is-open .lbox__img {
+  transform: none;
+}
+
+.lbox__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  max-width: min(70ch, 100%);
+}
+
+.lbox__caption {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.lbox__count {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-4);
+}
+
+/* ---------- controls ---------- */
+.lbox__close,
+.lbox__nav {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: rgba(10, 14, 22, 0.7);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.lbox__close:hover,
+.lbox__nav:hover,
+.lbox__close:focus-visible,
+.lbox__nav:focus-visible {
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: rgba(14, 20, 30, 0.9);
+  outline: none;
+}
+
+.lbox__close {
+  top: 26px;
+  right: 28px;
+  width: 42px;
+  height: 42px;
+}
+
+.lbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+}
+
+.lbox__nav--prev {
+  left: 22px;
+}
+.lbox__nav--next {
+  right: 22px;
+}
+
+@media (max-width: 768px) {
+  .lbox {
+    padding: 56px 14px 70px;
+  }
+  .lbox__img {
+    max-height: calc(100vh - 180px);
+  }
+  .lbox__close {
+    top: 14px;
+    right: 14px;
+  }
+  /* arrows would sit on top of the picture at this width — the viewer is
+     swipeable by dragging the page, and the counter says where you are */
+  .lbox__nav {
+    top: auto;
+    bottom: 14px;
+    transform: none;
+    width: 46px;
+    height: 46px;
+  }
+  .lbox__nav--prev {
+    left: 14px;
+  }
+  .lbox__nav--next {
+    right: 14px;
+  }
+  .detail__gallery .shot__frame::before {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lbox,
+  .lbox__img {
+    transition: none;
+  }
+}

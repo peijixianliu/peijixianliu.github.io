@@ -8,7 +8,36 @@ its own slots on purpose (unlike make_placeholders.py, which never overwrites).
 import glob, os, sys
 from PIL import Image, ImageOps
 
-U = "/mnt/user-data/uploads/网页文件"
+
+def _source_folder():
+    """Where the original photographs live.
+
+    Order: the PORTFOLIO_SRC environment variable, then the first of the
+    known locations that exists. Set the variable (or add a path here) and
+    these tools run anywhere — on the machine that holds the photos, not just
+    in the session that built the site.
+
+        Windows :  set PORTFOLIO_SRC=C:\\Users\\Pei\\Desktop\\网页文件
+        macOS   :  export PORTFOLIO_SRC=~/Desktop/网页文件
+    """
+    candidates = [
+        os.environ.get("PORTFOLIO_SRC"),
+        "/mnt/user-data/uploads/网页文件",
+        os.path.expanduser("~/Desktop/网页文件"),
+        os.path.expanduser("~/Desktop/web-source"),
+    ]
+    for c in candidates:
+        if c and os.path.isdir(os.path.expanduser(c)):
+            return os.path.expanduser(c)
+    raise SystemExit(
+        "Cannot find the source folder.\n"
+        "Point PORTFOLIO_SRC at the folder that holds one subfolder per "
+        "project, e.g.\n"
+        "    set PORTFOLIO_SRC=C:\\Users\\Pei\\Desktop\\网页文件"
+    )
+
+
+U = _source_folder()
 OUT = os.path.join(os.path.dirname(__file__), "..", "public", "images")
 # The lead image on a detail page is laid out at the full 1604px shell width,
 # and a `wide` card is 1061px. Anything under ~2400 is being upscaled on a

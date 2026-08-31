@@ -241,6 +241,44 @@
   gap: var(--gap);
 }
 
+/* A gallery is a list of sections. Most projects have one, untitled, and it
+   renders as bare rows. Dance / Light has four — one per piece — and each gets
+   a heading and a rule above it. */
+.galSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.galSection + .galSection {
+  margin-top: 34px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+.galSection__head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: -4px;
+}
+
+.galSection__idx {
+  color: var(--accent);
+}
+
+.galSection__title {
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.galSection__note {
+  margin-left: auto;
+  color: var(--ink-4);
+}
+
 .shotRow {
   display: flex;
   gap: var(--gap);

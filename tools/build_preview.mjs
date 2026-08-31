@@ -43,8 +43,16 @@ const cssFiles = [
   'capabilities.css',
   'contact.css',
   'detail.css',
+  'lightbox.css',
   'mobile.css', // must stay last — see the header of that file
 ]
+/* The lightbox is the SAME source the React app uses (src/lightbox.js). It is
+   deliberately plain DOM code with delegated listeners so it can be inlined
+   here verbatim — only the ES-module export line is stripped, since this page
+   runs it as a classic script. One implementation, no drift between builds. */
+const lightboxJs = (await readFile(path.join(root, 'src/lightbox.js'), 'utf8'))
+  .replace(/^export\s*\{[^}]*\}\s*$/m, '')
+
 const css = (
   await Promise.all(
     cssFiles.map((f) => readFile(path.join(root, 'src/styles', f), 'utf8'))
@@ -351,10 +359,13 @@ const detailHtml = (work, i) => {
   /* same precedence as WorkDetail.jsx: hand-written wins, generated fills in.
      The generated shape is pre-packed into justified rows; a hand-written flat
      list is wrapped so both render through one path. */
-  const galRows = d.gallery?.length
-    ? d.gallery.map((sh) => ({ shots: [sh] }))
+  const galSections = d.gallery?.length
+    ? [{ rows: d.gallery.map((sh) => ({ shots: [sh] })) }]
     : galleries[work.id] || []
-  const galCount = galRows.reduce((n, r) => n + r.shots.length, 0)
+  const galCount = galSections.reduce(
+    (n, sec) => n + sec.rows.reduce((m, r) => m + r.shots.length, 0),
+    0
+  )
   const prev = works[(i - 1 + works.length) % works.length]
   const next = works[(i + 1) % works.length]
 
@@ -434,12 +445,18 @@ const detailHtml = (work, i) => {
     <div class="detail__gallery">
       ${(() => {
         let n = 0
-        return galRows
+        return galSections
           .map(
-            (row) => `<div class="shotRow">${row.shots
-              .map((g, i) => {
-                n += 1
-                return `
+            (sec, si) => `<div class="galSection">${
+              sec.title
+                ? `<header class="galSection__head"><span class="galSection__idx mono">${pad(si + 1)}</span><h3 class="galSection__title">${esc(sec.title)}</h3>${sec.note ? `<span class="galSection__note mono">${esc(sec.note)}</span>` : ''}</header>`
+                : ''
+            }${sec.rows
+              .map(
+                (row) => `<div class="shotRow">${row.shots
+                  .map((g, i) => {
+                    n += 1
+                    return `
         <figure class="shot reveal" style="--r:${g.r || 1.5};transition-delay:${i * 70}ms">
           <div class="shot__frame">
             <img ${img(g.src)} alt="${esc(g.caption || work.title)}" loading="lazy" decoding="async">
@@ -447,8 +464,10 @@ const detailHtml = (work, i) => {
           </div>
           ${g.caption ? `<figcaption class="shot__caption">${esc(g.caption)}</figcaption>` : ''}
         </figure>`
-              })
-              .join('')}${row.pad > 0 ? `<i class="shotRow__pad" style="flex-grow:${row.pad}"></i>` : ''}</div>`
+                  })
+                  .join('')}${row.pad > 0 ? `<i class="shotRow__pad" style="flex-grow:${row.pad}"></i>` : ''}</div>`
+              )
+              .join('')}</div>`
           )
           .join('')
       })()}
@@ -610,6 +629,10 @@ const js = `
   }
 
   route();
+
+  // ---- gallery lightbox (src/lightbox.js, inlined) ----
+  __LIGHTBOX__
+  initLightbox();
 })();
 `
 
@@ -639,7 +662,7 @@ ${contactHtml}
 </div>
 ${detailsHtml}
 </main>
-<script>${js.replace('__IMG__', imgMapLiteral)}<\/script>`
+<script>${js.replace('__IMG__', imgMapLiteral).replace('__LIGHTBOX__', lightboxJs)}<\/script>`
 
 const artifact = `<title>Pei Jixian Liu</title>
 ${fonts}

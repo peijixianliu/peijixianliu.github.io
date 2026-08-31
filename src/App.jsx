@@ -7,12 +7,18 @@ import Capabilities from './components/Capabilities.jsx'
 import Contact from './components/Contact.jsx'
 import WorkDetail from './components/WorkDetail.jsx'
 import { useRoute } from './router.js'
+import { initLightbox } from './lightbox.js'
 /* last import wins the cascade — the mobile patch refines every section
    stylesheet, so it has to come after all of them */
+import './styles/lightbox.css'
 import './styles/mobile.css'
 
 export default function App() {
   const route = useRoute()
+
+  /* delegated, idempotent, and independent of React's tree — see
+     src/lightbox.js */
+  useEffect(initLightbox, [])
 
   useEffect(() => {
     // opening a project starts at the top; coming back honours the #section
