@@ -168,7 +168,7 @@ export const works = [
     category: 'theater',
     categoryLabel: 'Dance',
     title: 'Dance / Light',
-    subtitle: 'Chor. O. Ruhnke, D. Bamdad · Helen Wayne Rauh Theater',
+    subtitle: 'Chor. Ruhnke, Bamdad, Lee, Santiago · Helen Wayne Rauh Theater',
     year: '2024 — 2026',
     role: 'Costume Designer',
     image: '/images/work-theater-03.jpg',

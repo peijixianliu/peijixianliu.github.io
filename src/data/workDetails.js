@@ -156,11 +156,13 @@ export const workDetails = {
       { label: 'Role', value: 'Costume Designer — four pieces' },
       { label: 'Scope', value: 'Two seasons' },
     ],
+    /* paired by season, per the CV: Ruhnke and Bamdad in 2026,
+       Lee and Santiago in 2024 */
     team: [
-      { role: 'Choreographer', name: 'O. Ruhnke' },
-      { role: 'Choreographer', name: 'D. Bamdad' },
-      { role: 'Choreographer', name: 'K. Lee' },
-      { role: 'Choreographer', name: 'B. Santiago' },
+      { role: 'Chor. 2026', name: 'Olivia Ruhnke' },
+      { role: 'Chor. 2026', name: 'Daniel Bamdad' },
+      { role: 'Chor. 2024', name: 'Kiara Lee' },
+      { role: 'Chor. 2024', name: 'Benji Santiago' },
     ],
     synopsis: [
       'Four short pieces across two seasons of the school’s dance programme, each with its own choreographer and its own relationship to the light plot.',
