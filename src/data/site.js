@@ -112,9 +112,9 @@ export const works = [
     role: 'Costume Designer',
     image: '/images/work-film-01.jpg',
     size: 'tall',
-    award: 'Best Sci-Fi — NY Shorts Fest',
+    award: 'Best Sci-Fi — NY Shorts Intl. Film Fest',
     blurb:
-      'Near-future science fiction. A restrained, engineered wardrobe built to read as institutional uniform first and personal history second.',
+      'A near-future science fiction film, shot tight and cold. Two characters separated by the feel of their cloth: soft on the one who trusts, armor on the one who does not.',
     tags: ['Science Fiction', 'Costume Design'],
   },
 
@@ -160,8 +160,8 @@ export const works = [
     image: '/images/work-film-02.jpg',
     size: 'wide',
     blurb:
-      'Long-form television. Continuity tracking, sourcing and fitting coordination across twenty-eight episodes and a full principal cast.',
-    tags: ['Continuity', 'Sourcing', 'Wardrobe'],
+      'A fast-paced series shoot. Costumes for several co-star characters, plus the breakdown, sourcing and tracking that keep a cast this size consistent.',
+    tags: ['Contemporary', 'Television Series', 'Costume Design'],
   },
   {
     id: 'theater-dance-light',
@@ -264,8 +264,8 @@ export const works = [
     image: '/images/work-film-03.jpg',
     size: 'standard',
     blurb:
-      'A small cast, a tight frame, and a wardrobe built almost entirely out of texture and wear.',
-    tags: ['Aging & Distressing', 'Naturalism'],
+      'Kara wants to be at the party and is not sure she belongs. Her roommate Cassie is the opposite, and the contrast between them is the design.',
+    tags: ['Romance', 'Short Film', 'Costume Design'],
   },
 
   /* ---- row 7 : one full-width card ---- */

@@ -62,7 +62,7 @@ export const workDetails = {
       'The hardest brief in the series. There is no garment to design — only a figure that has to communicate threat, ritual and age through form alone.',
     ],
     approach: [
-      'I treated the plating as tailoring: panels cut on a grain, seams placed where a body needs to articulate, hard edges finished the way a good jacket edge is finished. The reference was armour construction rather than creature design.',
+      'I treated the plating as tailoring: panels cut on a grain, seams placed where a body needs to articulate, hard edges finished the way a good jacket edge is finished. The reference was armor construction rather than creature design.',
       'Scale was the last decision and the most important one — the figure had to read at silhouette size, from the back of a house, before any detail earns attention.',
     ],
     gallery: [],
@@ -142,7 +142,7 @@ export const workDetails = {
       'The design problem is the overlap: both centuries have to be unmistakable on their own, and legible as one picture when they share the stage.',
     ],
     approach: [
-      'I kept the two periods in separate colour temperatures rather than separate palettes, so the 1809 group reads warm and the modern group cool against the same set. Nothing in the modern dressing borrows a period line, and nothing period borrows a modern fabric.',
+      'I kept the two periods in separate color temperatures rather than separate palettes, so the 1809 group reads warm and the modern group cool against the same set. Nothing in the modern dressing borrows a period line, and nothing period borrows a modern fabric.',
       'The final scene, where both groups occupy the room at once, was designed backwards from a single image — everything earlier had to make that picture legible without explanation.',
     ],
     gallery: [],
@@ -169,7 +169,7 @@ export const workDetails = {
     ],
     approach: [
       'Dance costume is designed in motion or not at all. Every fabric was tested on a body turning under a moving light before anything was cut — weight, recovery, and how much of the shape survives a fast reversal.',
-      'Dyeing did most of the work. The pieces share a construction vocabulary and differ almost entirely in colour and finish, which kept the build tractable across two seasons.',
+      'Dyeing did most of the work. The pieces share a construction vocabulary and differ almost entirely in color and finish, which kept the build tractable across two seasons.',
     ],
     gallery: [],
   },
@@ -233,26 +233,26 @@ export const workDetails = {
   /* ================= FILM & TELEVISION ================= */
 
   'film-inversion': {
-    tagline: 'Institutional uniform first, personal history second.',
+    tagline: 'A story about androids, human life, and the future.',
     facts: [
       { label: 'Format', value: 'Short film' },
       { label: 'Year', value: '2022' },
       { label: 'Role', value: 'Costume Designer' },
-      { label: 'Award', value: 'Best Sci-Fi — NY Shorts Fest' },
+      { label: 'Award', value: 'Best Sci-Fi, New York Shorts International Film Festival' },
     ],
     team: [{ role: 'Director', name: 'Owen Zhang' }],
     synopsis: [
-      'Near-future science fiction, shot tight and cold. The world is explained almost entirely through what people are issued rather than what they choose.',
+      'A near-future science fiction film, shot tight and cold. The story asks whether, in the very near future, we will choose to trust the artificial beings we create, while exploring the relationship between humans and androids.',
     ],
     approach: [
-      'I designed the system before the characters: one issued garment, a small number of permitted modifications, and a strict rule about what a person is allowed to add. Everything individual had to fit inside that rule.',
-      'On camera the uniform reads as a single value, so the personal detail was pushed into texture and repair — visible only in close-up, which is where the film spends its time.',
+      'The film is grounded in a dark, cool-toned visual palette. My costume design focused on shaping character through the tactile qualities of different fabrics.',
+      'The protagonist, who chooses to trust and ultimately save an android child, wears soft, approachable fabrics that reflect her empathy and openness. In contrast, the police officer, who coldly carries out his mission, is defined by the structured textures of armor and leather, along with clean, sharp lines that reflect his emotional distance.',
     ],
     gallery: [],
   },
 
   'film-she-is-just-her': {
-    tagline: 'Twenty-eight episodes, one principal cast, and continuity that cannot slip.',
+    tagline: 'A fashion drama series about the modern workplace and a woman’s journey of growth.',
     facts: [
       { label: 'Format', value: '28-episode drama series' },
       { label: 'Broadcaster', value: 'Youku' },
@@ -261,17 +261,16 @@ export const workDetails = {
     ],
     team: [],
     synopsis: [
-      'A long-form television drama shot out of order across a full principal cast — the scale at which wardrobe becomes an operations problem as much as a design one.',
+      'A television series filmed in 2024, currently unreleased. The story follows Shengxia as she navigates the challenges of the modern workplace, alongside a developing romantic relationship with Lin Chao.',
     ],
     approach: [
-      'My work here was the operational half: script breakdown, sourcing, fitting coordination, and a continuity system that had to survive scenes shot weeks apart being cut together.',
-      'The lesson of the job was that on a series this length, the design only survives if the tracking does.',
+      'A fast-paced television production where I designed costumes for multiple co-star characters. My responsibilities included script breakdowns, sourcing, shopping, tracking, fitting coordination, and cross-department communication. I also assisted the lead costume designer with fittings for A-list principals.',
     ],
     gallery: [],
   },
 
   'film-go-fish': {
-    tagline: 'A wardrobe built almost entirely out of texture and wear.',
+    tagline: 'A short film about letting go of the anxiety of never feeling good enough.',
     facts: [
       { label: 'Format', value: 'Short film' },
       { label: 'Year', value: '2025' },
@@ -279,11 +278,10 @@ export const workDetails = {
     ],
     team: [{ role: 'Director', name: 'Eliot Herron' }],
     synopsis: [
-      'A small cast in a tight frame. With this little screen time and this few people, every garment has to arrive already having had a life.',
+      'Go Fish follows Kara, a college student who lacks confidence in herself and creates a fake dating profile. What begins as an attempt to become someone else unexpectedly leads her to a party where she and the person she likes discover each other as their authentic selves.',
     ],
     approach: [
-      'Almost nothing here was designed in the usual sense — it was sourced, then aged. The work was in the breakdown: which garment has been washed too often, which has never been washed, which was bought for an occasion that has long passed.',
-      'Because the camera sits close, the aging had to survive inspection. Nothing is sprayed on.',
+      'For this project, I explored how costume could capture Kara’s very specific feeling of wanting to go to the party while still being unsure of herself. Through the contrast between Kara and her roommate Cassie’s more mature style, the costumes create two distinct representations of femininity and show different ways of navigating confidence, identity, and growing into oneself.',
     ],
     gallery: [],
   },
