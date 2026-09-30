@@ -1,0 +1,79 @@
+# Builds docs/ from src/ + public/ on every push to main, and publishes it.
+#
+# WHY THIS AND NOT deploy.yml:
+#   docs/ is what has always been live. It is produced by
+#   `node tools/build_preview.mjs`, which has NO dependencies — it reads
+#   src/data/*.js and src/styles/*.css directly and copies public/ across.
+#   No `npm install`, no vite, nothing that can break while nobody is around.
+#   deploy.yml builds the React app with vite instead; that build has never
+#   actually run, so it stays on workflow_dispatch until someone tests it.
+#
+# WHAT THIS MEANS DAY TO DAY:
+#   Edit src/data/site.js (or any source file) — on GitHub's web editor, from
+#   a phone, from anywhere — commit to main, and the live site updates by
+#   itself a minute later. docs/ no longer has to be regenerated and committed
+#   by hand; whatever is committed there is ignored by this workflow.
+#
+# ROLLBACK (if this ever misbehaves):
+#   Settings -> Pages -> Source -> Deploy from a branch -> main / docs.
+#   The last good docs/ is still committed in the repo, so the site comes
+#   straight back.
+
+name: Build and deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race each other.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Pillow is optional — build_preview.mjs only needs it for the inlined
+      # artifact/standalone previews, not for docs/. Installing it anyway keeps
+      # the build log clean and costs a few seconds.
+      - run: pip install --quiet pillow
+        continue-on-error: true
+
+      - name: Build docs/ from source
+        run: node tools/build_preview.mjs
+
+      - name: Fail if docs/ came out empty
+        run: |
+          test -s docs/index.html || { echo "docs/index.html missing or empty"; exit 1; }
+          test -d docs/images || { echo "docs/images missing"; exit 1; }
+          test -f docs/resume/Pei-Jixian-Liu-CV.pdf || { echo "resume PDF missing"; exit 1; }
+          echo "docs/index.html: $(wc -c < docs/index.html) bytes"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
