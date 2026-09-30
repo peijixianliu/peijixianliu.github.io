@@ -1,18 +1,18 @@
-# Optional: build the React app with Vite and publish that instead of docs/.
+# ALTERNATIVE, NOT THE ACTIVE ONE. Builds the React app with Vite and publishes
+# dist/ instead of docs/.
 #
-# You do not need this to go live. docs/ is a complete static site and GitHub
-# Pages can serve it with no build at all — see the README. Use this workflow
-# when you would rather deploy the React source, so the site is always built
-# from src/ and docs/ never has to be regenerated and committed.
+# pages.yml is what actually deploys the site (it runs tools/build_preview.mjs,
+# which needs nothing installed). This one needs `npm install` to succeed and
+# has never been run against this repo, so its push trigger is OFF on purpose —
+# two workflows both deploying to Pages would race each other.
 #
-# To switch to it: Settings -> Pages -> Source -> GitHub Actions.
-# To go back:      Settings -> Pages -> Source -> Deploy from a branch -> main /docs.
+# To try it: Actions -> "Deploy site (vite, alternative)" -> Run workflow.
+# If it works and you would rather ship the real Vite build, disable pages.yml
+# first, then add the push trigger back here.
 
-name: Deploy site
+name: Deploy site (vite, alternative)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
